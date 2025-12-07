@@ -1,0 +1,38 @@
+#btnMicrosoft {
+        color: #3c4043;
+        padding: 10px 12px;
+        border: 1px solid #dadce0;
+        background-color: white;
+        cursor: pointer;
+        border-radius: 4px;
+        align-items: center;
+        font-family: Google Sans, arial, sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        transition: background-color 0.218s, border-color 0.218s;
+
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-items: center;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-flex-direction: row;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        flex-direction: row;
+        -webkit-box-pack: justify;
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+        -webkit-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        height: 100%;
+        position: relative;
+        width: 100%;
+  }
+#btnMicrosoft:hover {
+    background-color: rgba(210, 227, 252, 0.281);
+    border-color: rgb(210,227,252);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    outline: none;
+  }

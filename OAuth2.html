@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OAuth</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+    <link rel="stylesheet" href="stylesOAuth.css">
+  </head>
+  <body>
+    <div id="btnGoogle"></div>
+    <button
+      id="btnMicrosoft"
+    >
+      <img src="microsoft-logo.png" width="20" height="auto" alt="" srcset="" />
+      <span style="text-align: center; width: -webkit-fill-available"
+        >Acceder con Microsoft</span
+      >
+    </button>
+  </body>
+  <script>
+    const clientID =
+      "485918962440-8h5uukp8qqg8da4vnoqg3a1b2h96lh2v.apps.googleusercontent.com";
+    console.log(clientID);
+    function handleCredentialResponse(response) {
+      console.log("Google ID Token:", response.credential);
+      // Decode JWT, validarlo en backend, crear sesión, etc.
+      const jwt = decodeJwt(response.credential);
+
+      console.log("Email:", jwt.email);
+      console.log("Nombre:", jwt.name);
+      console.log("Foto:", jwt.picture);
+      console.log("Google sub ID:", jwt.sub);
+    }
+
+    function decodeJwt(token) {
+      const payload = token.split(".")[1];
+      const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+      return JSON.parse(decoded);
+    }
+
+    window.onload = function () {
+      google.accounts.id.initialize({
+        client_id: clientID,
+        callback: handleCredentialResponse,
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("btnGoogle"), // un div o botón
+        { theme: "outline", size: "large" }
+      );
+    };
+  </script>
+  <script>
+    // === Tu CLIENT ID de Azure AD / Microsoft Entra ===
+    const msalConfig = {
+      auth: {
+        clientId: "82e01865-8461-4e53-847f-444b130bfca9",
+        redirectUri: window.location.origin,
+      },
+    };
+
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    console.log(msalConfig);
+    const loginRequest = {
+      scopes: ["User.Read"], // Para obtener info del usuario
+    };
+
+    document.getElementById("btnMicrosoft").onclick = async function () {
+      try {
+        const loginResponse = await msalInstance.loginPopup(loginRequest);
+
+        console.log("Microsoft Token:", loginResponse.accessToken);
+        console.log("Usuario:", loginResponse.account);
+
+        // Aquí llamar a tu backend con el token
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  </script>
+</html>
