@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login con Google</title>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client"></script>
+
+  <style>
+    .btn-google {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      width: 280px;
+      background: #ffffff;
+      color: #3c4043;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-google img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-google:hover {
+      background-color: #f7f8f8;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body>
+
+  <button id="BTN_GOOGLE" class="btn-google">
+    <img src="https://developers.google.com/identity/images/g-logo.png" />
+    <span>Continuar con Google</span>
+  </button>
+
+  <script>
+    const GOOGLE_CLIENT_ID =
+      "485918962440-8h5uukp8qqg8da4vnoqg3a1b2h96lh2v.apps.googleusercontent.com";
+
+    let googleInitialized = false;
+
+    function decodeJwt(token) {
+      const payload = token.split(".")[1];
+      const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+      return JSON.parse(decoded);
+    }
+
+    function handleCredentialResponse(response) {
+      if (!response?.credential) return;
+
+      const jwt = decodeJwt(response.credential);
+      console.log("Email:", jwt.email);
+      console.log("Nombre:", jwt.name);
+    }
+
+    function initGoogleAuth() {
+      if (googleInitialized) return;
+      googleInitialized = true;
+
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+        auto_select: false
+      });
+
+      document
+        .getElementById("BTN_GOOGLE")
+        .addEventListener("click", () => {
+          google.accounts.id.prompt();
+        });
+    }
+
+    // ⏳ Esperar activamente a que Google cargue
+    function waitForGoogle() {
+      if (window.google && google.accounts && google.accounts.id) {
+        initGoogleAuth();
+      } else {
+        setTimeout(waitForGoogle, 50);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", waitForGoogle);
+  </script>
+
+</body>
+</html>
